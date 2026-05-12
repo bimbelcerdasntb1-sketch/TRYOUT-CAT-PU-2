@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway - BIMBEL CERDAS NTB</title>
+    <style>
+        :root { --primary: #000000; --accent: #d4af37; --bg: #f0f4f8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .lock-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px; border-top: 5px solid var(--accent); }
+        input[type="password"] { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 1.1rem; }
+        .btn { background: var(--primary); color: white; border: 1px solid var(--accent); padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .error { color: #c0392b; font-size: 0.8rem; margin-top: 10px; display: none; }
+        .footer-brand { margin-top: 2rem; font-size: 0.7rem; color: #7f8c8d; }
+    </style>
+</head>
+<body oncontextmenu="return false" onkeydown="return false">
+
+<div class="lock-card" id="lockBox">
+    <h2 style="margin: 0; color: var(--primary);">TRYOUT CAT BIMBEL CERDAS NTB</h2>
+    <p style="color: #666; font-size: 0.9rem;">Silakan masukkan kode akses untuk memulai simulasi</p>
+    
+    <input type="password" id="passInput" placeholder="Kode Akses..." autocomplete="off">
+    <button class="btn" onclick="checkAccess()">MASUK SISTEM</button>
+    <p class="error" id="errMsg">Kode salah atau akses telah kedaluwarsa!</p>
+
+    <div class="footer-brand">
+        Persona Research & Consulting<br>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi Keamanan
+    const CONFIG = {
+        SECRET: "cerdas1",
+        EXPIRY_DATE: new Date("2026-11-08T23:59:59"), // Expired 6 bulan (Mei - Nov 2026) [cite: 2026-02-09]
+        TARGET_FILE: "pu_2.html"
+    };
+
+    // Pastikan input bisa diketik (bypass body lock)
+    document.getElementById('passInput').addEventListener('keydown', function(e) {
+        e.stopPropagation();
+        if (e.key === 'Enter') checkAccess();
+    });
+
+    function checkAccess() {
+        const input = document.getElementById('passInput').value;
+        const errMsg = document.getElementById('errMsg');
+        const now = new Date();
+
+        // 1. Cek Kedaluwarsa [cite: 2026-02-09]
+        if (now > CONFIG.EXPIRY_DATE) {
+            errMsg.innerText = "Sesi latihan ini telah berakhir (Expired).";
+            errMsg.style.display = "block";
+            return;
+        }
+
+        // 2. Cek Password
+        if (input === CONFIG.SECRET) {
+            // Anti-Copy Encrypted Redirect
+            sessionStorage.setItem('access_granted', 'true');
+            window.location.href = CONFIG.TARGET_FILE;
+        } else {
+            errMsg.style.display = "block";
+            document.getElementById('passInput').value = "";
+        }
+    }
+
+    // Anti-Inspect Element Dasar
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+    }
+</script>
+</body>
+</html>
